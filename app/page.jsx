@@ -12,10 +12,7 @@ import { useDispatch } from "react-redux";
 import { getLocationsAutoComplete } from "./redux/actions/dashboardActions";
 import { allValidations } from "./utils/formValidations";
 import { useRouter } from "next/navigation";
-interface ChangeEvent {
-  name: string;
-  value: string;
-}
+
 
 const faqItems = [
   {
@@ -69,7 +66,7 @@ export default function Home() {
     async function loadData() {
       try {
         dispatch(getLocationsAutoComplete("ca"));
-      } catch (err: any) {
+      } catch (err) {
         console.log("-----------------", err);
         setError(err.message);
       }
@@ -78,12 +75,13 @@ export default function Home() {
     loadData();
   }, []);
 
-  const handleChange = ({ name, value }: ChangeEvent) => {
+  const handleChange = ({ name, value }) => {
     const formErrors = allValidations(name, value, data);
     setData((prev) => ({ ...prev, [name]: value, formErrors }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     router.push(
       `/job?jobTitle=${data.jobLocation}&jobLocation=${data.jobLocation}`
     );

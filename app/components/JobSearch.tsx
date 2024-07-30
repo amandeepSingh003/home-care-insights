@@ -26,7 +26,9 @@ const SearchForm = ({
           <input
             type="text"
             value={jobTitle}
-            onChange={handleChange}
+            onChange={(e) =>
+              handleChange({ name: "jobTitle", value: e.target.value })
+            }
             id="job-title"
             name="job-title"
             placeholder="Job Title Function"
@@ -44,7 +46,9 @@ const SearchForm = ({
             type="text"
             id="job-location"
             value={jobLocation}
-            onChange={handleChange}
+            onChange={(e) =>
+              handleChange({ name: "jobLocation", value: e.target.value })
+            }
             name="job-location"
             placeholder="Anywhere, City, State, Zip Code, Remote"
             className="mt-2 block w-full px-3 py-3 border border-black rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
@@ -53,7 +57,7 @@ const SearchForm = ({
         <div className=" md:w-fit grid md:flex  md:items-center space-x-4">
           <button
             type="submit"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSubmit(e)}
             className="inline-flex text-center items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
           >
             Search Job &rarr;
