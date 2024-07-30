@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Breadcrumbs from "../components/BreadCrumbs";
 import Button from "../components/Button";
@@ -7,8 +9,11 @@ import JobMarketAnalysis from "../components/JobMarketAnalysis";
 import image from "../assets/images/image.png";
 import CompanyJobStats from "../components/CompanyJobStats";
 import FaqAccordion from "../components/Faq";
+import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
+  const router = useRouter();
+
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Registered nurse Jobs", href: "/registered-nurse-jobs" },
@@ -67,7 +72,10 @@ export default function page() {
               <h2>Registered Nurse Jobs</h2>
               <p className="text-base	font-medium mt-4">
                 2450 Registered Nurse Jobs within 25 miles of Winter Park, FL
-                <span className="ml-2 text-teal underline underline-offset-1 cursor-pointer">
+                <span
+                  className="ml-2 text-teal underline underline-offset-1 cursor-pointer"
+                  onClick={() => router.back()}
+                >
                   Change location
                 </span>
               </p>

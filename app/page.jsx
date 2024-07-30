@@ -1,13 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import JobSearch from "./components/JobSearch";
 import { Card, CustomCard } from "./components/Card";
 import CompanyJobStats from "./components/CompanyJobStats";
 import FaqAccordion from "./components/Faq";
 import JobsByStateMapWithImage from "./components/Map";
 import { useEffect, useState } from "react";
-import api from "./services/api";
 import { useDispatch } from "react-redux";
 import { getLocationsAutoComplete } from "./redux/actions/dashboardActions";
 import { allValidations } from "./utils/formValidations";
@@ -67,7 +65,6 @@ export default function Home() {
       try {
         dispatch(getLocationsAutoComplete("ca"));
       } catch (err) {
-        console.log("-----------------", err);
         setError(err.message);
       }
     }
@@ -82,6 +79,7 @@ export default function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!data.jobLocation && !data.jobTitle) return
     router.push(
       `/job?jobTitle=${data.jobLocation}&jobLocation=${data.jobLocation}`
     );
