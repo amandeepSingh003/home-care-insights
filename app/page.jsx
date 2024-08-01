@@ -4,13 +4,20 @@ import JobSearch from "./components/JobSearch";
 import { Card, CustomCard } from "./components/Card";
 import CompanyJobStats from "./components/CompanyJobStats";
 import FaqAccordion from "./components/Faq";
-import JobsByStateMapWithImage from "./components/Map";
+// import JobsByStateMapWithImage from "../components/Map";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getLocationsAutoComplete } from "./redux/actions/dashboardActions";
-import { allValidations } from "./utils/formValidations";
+import { getLocationsAutoComplete, getPopularJobSearches } from "../redux/actions/dashboardActions";
+import { allValidations } from "../utils/formValidations";
 import { useRouter } from "next/navigation";
+import { Suspense } from 'react'
 
+import dynamic from "next/dynamic";
+
+const JobsByStateMapWithImage = dynamic(
+  () => import("./components/Map"),
+  { ssr: false }
+);
 
 const faqItems = [
   {
@@ -53,24 +60,20 @@ export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  // let popularJobSearches = useSelector((state) => state.executive.allExecutives);
+
   const [data, setData] = useState({
     jobTitle: "",
     jobLocation: "",
   });
 
-  const [error, setError] = useState(null);
-
   useEffect(() => {
-    async function loadData() {
-      try {
-        dispatch(getLocationsAutoComplete("ca"));
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-
+    const loadData = async () => {
+      await dispatch(getLocationsAutoComplete("ca"));
+      await dispatch(getPopularJobSearches("ca"));
+    };
     loadData();
-  }, []);
+  }, [dispatch]);
 
   const handleChange = ({ name, value }) => {
     const formErrors = allValidations(name, value, data);
@@ -81,19 +84,9 @@ export default function Home() {
     e.preventDefault();
     if (!data.jobLocation && !data.jobTitle) return
     router.push(
-      `/job?jobTitle=${data.jobLocation}&jobLocation=${data.jobLocation}`
+      `/job?jobTitle=${data.jobTitle}&jobLocation=${data.jobLocation}`
     );
   };
-
-  if (error) {
-    return (
-      <div>
-        <h1>Error</h1>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -211,7 +204,7 @@ export default function Home() {
         <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto  p-4 md:p-10 MapWrapper ">
           <h2 className="text-2xl font-normal mb-8">New Jobs by State</h2>
           <JobsByStateMapWithImage
-            imageUrl="/us-map.png"
+            // imageUrl="/us-map.png"
             legendData={legendData}
           />
         </div>

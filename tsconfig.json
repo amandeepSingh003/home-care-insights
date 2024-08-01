@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/redux/index.js", "app/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/redux/index.js", "app/page.jsx", "app/components/Map.jsx", "app/job/page.jsx", "app/components/Button.jsx", "app/components/BreadCrumbs.jsx", "app/components/Card.jsx", "app/components/clientProvider.jsx", "app/components/CompanyJobStats.jsx", "app/components/Faq.jsx", "app/components/JobCard.jsx", "app/components/JobMarketAnalysis.jsx", "app/components/JobSearch.jsx", "app/layout/Footer.jsx", "app/layout/Header.jsx", "app/talent-reports/page.jsx", "app/layout.jsx", "redux/actions/dashboardActions.js"],
   "exclude": ["node_modules"]
 }
