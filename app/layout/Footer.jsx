@@ -3,6 +3,9 @@ import Image from "next/image";
 import Logo from "../assets/images/logo.svg";
 
 export default function Footer() {
+
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -134,7 +137,7 @@ export default function Footer() {
         </div>
 
         <div className="my-12 text-center footCopyRight">
-          <p>Inc © 2024 All Rights Reserved Worldwide </p>
+          <p>Inc © {currentYear} All Rights Reserved Worldwide </p>
         </div>
       </div>
     </footer>

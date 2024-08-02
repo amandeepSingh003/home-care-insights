@@ -6,11 +6,12 @@ import CompanyJobStats from "./components/CompanyJobStats";
 import FaqAccordion from "./components/Faq";
 // import JobsByStateMapWithImage from "../components/Map";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { getLocationsAutoComplete, getPopularJobSearches } from "../redux/actions/dashboardActions";
+import { useDispatch, useSelector } from "react-redux";
+import { getLocationsAutoComplete } from "../redux/actions/dashboardActions";
+import { getPopularJobSearches } from "../redux/actions/jobActions";
+import { getFAQs } from "../redux/actions/otherActions";
 import { allValidations } from "../utils/formValidations";
 import { useRouter } from "next/navigation";
-import { Suspense } from 'react'
 
 import dynamic from "next/dynamic";
 
@@ -60,7 +61,8 @@ export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // let popularJobSearches = useSelector((state) => state.executive.allExecutives);
+  let popularJobSearches = useSelector((state) => state.job.popularJobSearch);
+  let faqData = useSelector((state) => state.otherReducer.faqData);
 
   const [data, setData] = useState({
     jobTitle: "",
@@ -68,11 +70,9 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const loadData = async () => {
-      await dispatch(getLocationsAutoComplete("ca"));
-      await dispatch(getPopularJobSearches("ca"));
-    };
-    loadData();
+    dispatch(getLocationsAutoComplete("ca"));
+    dispatch(getPopularJobSearches());
+    dispatch(getFAQs());
   }, [dispatch]);
 
   const handleChange = ({ name, value }) => {
@@ -284,44 +284,27 @@ export default function Home() {
           <h2 className="text-2xl font-normal mb-8">
             Popular Job Searches in Home Health this week
           </h2>
-          <div className="grid grid-rows-1 grid-col-1 md:grid-col-3 grid-flow-col gap-4 mt-10 PopularJobwrapper">
-            <div className="hidden md:block">
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-            </div>
-            <div className="hidden md:block">
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-            </div>
+          <div className="grid grid-rows-1 grid-cols-1 md:grid-cols-3 grid-flow-row gap-4 mt-10 PopularJobwrapper">
+            {popularJobSearches.industries && popularJobSearches.industries.length > 0 && popularJobSearches.industries.map((industry, index) => (
+              <div key={index}>
+                <h4>{industry.term}</h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      {faqData.faq && faqData.faq.length && (
+        <section className="bg-gray-50 p-4 md:p-8 space-y-5">
+          <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
+            <h2 className="text-2xl font-normal mb-8">
+              Frequently asked questions about flying from New York to Paris
+            </h2>
             <div>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
+              <FaqAccordion items={faqData?.faq} />
             </div>
           </div>
-        </div>
-      </section>
-      <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
-          <h2 className="text-2xl font-normal mb-8">
-            Frequently asked questions about flying from New York to Paris
-          </h2>
-          <div>
-            <FaqAccordion items={faqItems} />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

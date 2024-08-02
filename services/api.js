@@ -7,18 +7,14 @@ const api = async (
   urlEndPoint,
   data = {},
   params = {},
-  header = "application/json"
+  header = {}
 ) => {
   try {
+    console.log("urlEndpoint", header, urlEndPoint);
     let headers = {
-      "Content-Type": header,
+      "Content-Type": "application/json",
+      ...header,
     };
-    // if (isAuthenticated()) {
-    //   headers = {
-    //     ...headers,
-    //     Authorization: `Bearer ${isAuthenticated()}`,
-    //   };
-    // }
     let response = await axios({
       method,
       url: BASE_URL + urlEndPoint,

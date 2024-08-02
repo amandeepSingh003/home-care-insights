@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Breadcrumbs from "../components/BreadCrumbs";
 import Button from "../components/Button";
 import JobCard from "../components/JobCard";
@@ -12,21 +12,32 @@ import FaqAccordion from "../components/Faq";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from 'react'
+import { getFAQs } from "../../redux/actions/otherActions";
+import { jobDetails, jobLocationsNearby } from "../../redux/actions/jobActions";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 
 function JobPageContent() {
+  const dispatch = useDispatch();
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const jobTitle = searchParams.get("jobTitle");
   const jobLocation = searchParams.get("jobLocation");
 
+  let faqData = useSelector((state) => state.otherReducer.faqData);
+  let jobDetailsData = useSelector((state) => state.job.jobDetails);
+  let jobLocationsNearbyData = useSelector((state) => state.job.jobLocationsNearby);
+
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     {
-      label: "Registered nurse Jobs",
+      label: `${jobTitle} Jobs`,
       href: `/jobs?jobTitle=${jobTitle}&jobLocation=${jobLocation}`,
     },
   ];
+
   const pieData = [
     { name: "Full-Time", value: 900, color: "#5BEDF0" },
     { name: "Part-Time", value: 100, color: "#4CC5C7" },
@@ -40,6 +51,13 @@ function JobPageContent() {
     { name: "$35", value: 35, color: "#4CC5C7" },
     { name: "$50", value: 50, color: "#3C9C9E" },
   ];
+
+  useEffect(() => {
+    dispatch(getFAQs());
+    dispatch(jobDetails({ jobTitle }));
+    dispatch(jobLocationsNearby({ jobTitle }));
+  }, [dispatch, jobTitle]);
+
   const faqItems = [
     {
       question: "How long does it take to fly from New York to Paris?",
@@ -78,14 +96,16 @@ function JobPageContent() {
           </div>
           <div className="flex justify-between">
             <div className="text-2xl font-normal">
-              <h2>Registered Nurse Jobs</h2>
+              <h2>{jobTitle || "N/a"} Jobs</h2>
               <p className="text-base	font-medium mt-4">
-                2450 Registered Nurse Jobs within 25 miles of Winter Park, FL
+                {jobDetailsData?.pagination?.totalItems || 0} {jobTitle} Jobs within 25 miles of {jobLocation || "N/a"}
+                {/* 2450 Registered Nurse Jobs within 25 miles of Winter Park, FL */}
                 <span
                   className="ml-2 text-teal underline underline-offset-1 cursor-pointer"
-                  onClick={() => router.back()}
                 >
-                  Change location
+                  <Link href="/">
+                    Change location
+                  </Link>
                 </span>
               </p>
             </div>
@@ -95,80 +115,41 @@ function JobPageContent() {
           </div>
         </div>
       </section>
-      <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
-        <div className="max-w-7xl md:mx-auto">
-          <div>
-            <JobCard
-              jobTitle="Registered Nurse - Home Health ($10,000 Sign On Bonus)"
-              img={image}
-              jobType="Full-time"
-              salaryRange="$89,000 to $98,000"
-              location="WINTER PARK, FL"
-              jobSummary="Job Summary: Seeking a Licensed Pratical Nurse or Registered Nurse licensed in Florida, CPR certified, with long-term care experience prefered. Responsaibilities include managing admissions, documentation, emergency support and staff coordination. Benefits: shift differential."
-              buttonLabel="Apply Now →"
-              companyName="Visiting Angels"
-              postingDate="Posted Yesterday"
-              rating={2}
-            />
-            <JobCard
-              jobTitle="Registered Nurse - Home Health ($10,000 Sign On Bonus)"
-              img={image}
-              jobType="Full-time"
-              salaryRange="$89,000 to $98,000"
-              location="WINTER PARK, FL"
-              jobSummary="Job Summary: Seeking a Licensed Pratical Nurse or Registered Nurse licensed in Florida, CPR certified, with long-term care experience prefered. Responsaibilities include managing admissions, documentation, emergency support and staff coordination. Benefits: shift differential."
-              buttonLabel="Apply Now →"
-              companyName="Visiting Angels"
-              postingDate="Posted Yesterday"
-              rating={2}
-            />
-            <JobCard
-              jobTitle="Registered Nurse - Home Health ($10,000 Sign On Bonus)"
-              img={image}
-              jobType="Full-time"
-              salaryRange="$89,000 to $98,000"
-              location="WINTER PARK, FL"
-              jobSummary="Job Summary: Seeking a Licensed Pratical Nurse or Registered Nurse licensed in Florida, CPR certified, with long-term care experience prefered. Responsaibilities include managing admissions, documentation, emergency support and staff coordination. Benefits: shift differential."
-              buttonLabel="Apply Now →"
-              companyName="Visiting Angels"
-              postingDate="Posted Yesterday"
-              rating={2}
-            />
-            <JobCard
-              jobTitle="Registered Nurse - Home Health ($10,000 Sign On Bonus)"
-              img={image}
-              jobType="Full-time"
-              salaryRange="$89,000 to $98,000"
-              location="WINTER PARK, FL"
-              jobSummary="Job Summary: Seeking a Licensed Pratical Nurse or Registered Nurse licensed in Florida, CPR certified, with long-term care experience prefered. Responsaibilities include managing admissions, documentation, emergency support and staff coordination. Benefits: shift differential."
-              buttonLabel="Apply Now →"
-              companyName="Visiting Angels"
-              postingDate="Posted Yesterday"
-              rating={2}
-            />
-            <JobCard
-              jobTitle="Registered Nurse - Home Health ($10,000 Sign On Bonus)"
-              img={image}
-              jobType="Full-time"
-              salaryRange="$89,000 to $98,000"
-              location="WINTER PARK, FL"
-              jobSummary="Job Summary: Seeking a Licensed Pratical Nurse or Registered Nurse licensed in Florida, CPR certified, with long-term care experience prefered. Responsaibilities include managing admissions, documentation, emergency support and staff coordination. Benefits: shift differential."
-              buttonLabel="Apply Now →"
-              companyName="Visiting Angels"
-              postingDate="Posted Yesterday"
-              rating={2}
-            />
+      {jobDetailsData?.items && jobDetailsData?.items.length > 0 && (
+        <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
+          <div className="max-w-7xl md:mx-auto">
+            <div>
+              {jobDetailsData?.items.map((item, index) => {
+                return (
+                  <JobCard
+                    key={index}
+                    jobTitle={item.title || "N/a"}
+                    img={image}
+                    jobType={item.jobType || "N/a"}
+                    salaryRange={item.estimatedSalary}
+                    // salaryRange="$89,000 to $98,000"
+                    location={item.location || "N/a"}
+                    jobSummary={item.jobSummary || "N/a"}
+                    buttonLabel="Apply Now →"
+                    buttonLink={item.jobUrl}
+                    companyName={item.companyName || "N/a"}
+                    postingDate={item.publishedAt}
+                    rating={item.rating}
+                  />
+                )
+              })}
+            </div>
+            <div className="flex justify-center">
+              <Button label={`Load more ${jobTitle || "N/a"} jobs in ${jobLocation || "N/a"}`} />
+            </div>
           </div>
-          <div className="flex justify-center">
-            <Button label="Load more jobs registered nurse jobs in Winter Park, FL" />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
-            Interesting Stats on Registered Nurse Jobs in Winter Park, FL
-            <span className="text-teal ml-1">Winter Park, FL</span>
+            Interesting Stats on {jobTitle} Jobs in
+            <span className="text-teal ml-1">{jobLocation}</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-14">
             <Card totalJobs={601377} percentageChange={6.47} date="5/1/2024" />
@@ -262,16 +243,18 @@ function JobPageContent() {
           </div>
         </div>
       </section>
-      <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
-          <h2 className="text-2xl font-normal mb-8">
-            Frequently asked questions about flying from New York to Paris
-          </h2>
-          <div>
-            <FaqAccordion items={faqItems} />
+      {faqData.faq && faqData.faq.length > 0 && (
+        <section className="bg-gray-50 p-4 md:p-8 space-y-5">
+          <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
+            <h2 className="text-2xl font-normal mb-8">
+              Frequently asked questions about flying from New York to Paris
+            </h2>
+            <div>
+              <FaqAccordion items={faqData.faq} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }
