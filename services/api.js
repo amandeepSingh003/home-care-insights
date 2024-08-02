@@ -10,7 +10,6 @@ const api = async (
   header = {}
 ) => {
   try {
-    console.log("urlEndpoint", header, urlEndPoint);
     let headers = {
       "Content-Type": "application/json",
       ...header,

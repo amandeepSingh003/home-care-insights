@@ -1,4 +1,4 @@
-// File: D:\Amandeep\home-care-insights\app\job\page.jsx
+// File: D:\Amandeep\Testing\home-care-insights\app\job\page.jsx
 import * as entry from '../../../../app/job/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -33,7 +33,10 @@ const jobDetails =
     );
     dispatch({
       type: types.JOB_SEARCH,
-      payload: res,
+      payload: {
+        items: res.items,
+        pagination: res.pagination,
+      },
     });
     dispatch(hideLoaderAction());
   };

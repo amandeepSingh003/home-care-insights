@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Breadcrumbs from "../components/BreadCrumbs";
 import Button from "../components/Button";
 import JobCard from "../components/JobCard";
@@ -26,6 +26,9 @@ function JobPageContent() {
   const jobTitle = searchParams.get("jobTitle");
   const jobLocation = searchParams.get("jobLocation");
 
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   let faqData = useSelector((state) => state.otherReducer.faqData);
   let jobDetailsData = useSelector((state) => state.job.jobDetails);
   let jobLocationsNearbyData = useSelector((state) => state.job.jobLocationsNearby);
@@ -33,8 +36,8 @@ function JobPageContent() {
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     {
-      label: `${jobTitle} Jobs`,
-      href: `/jobs?jobTitle=${jobTitle}&jobLocation=${jobLocation}`,
+      label: `${jobTitle || "N/a"} Jobs`,
+      href: `/jobs?jobTitle=${jobTitle || "N/a"}&jobLocation=${jobLocation || "N/a"}`,
     },
   ];
 
@@ -54,9 +57,9 @@ function JobPageContent() {
 
   useEffect(() => {
     dispatch(getFAQs());
-    dispatch(jobDetails({ jobTitle }));
-    dispatch(jobLocationsNearby({ jobTitle }));
-  }, [dispatch, jobTitle]);
+    dispatch(jobDetails({ jobTitle, page }));
+    // dispatch(jobLocationsNearby({ jobTitle }));
+  }, [dispatch, jobTitle, page]);
 
   const faqItems = [
     {
@@ -86,6 +89,19 @@ function JobPageContent() {
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     },
   ];
+
+  useEffect(() => {
+    if (jobDetailsData?.pagination) {
+      const { totalItems, totalPageItems } = jobDetailsData.pagination;
+      setTotalPages(Math.ceil(totalItems / totalPageItems));
+    }
+  }, [jobDetailsData]);
+
+  const handleLoadMore = () => {
+    if (page < totalPages) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
 
   return (
     <>
@@ -139,9 +155,11 @@ function JobPageContent() {
                 )
               })}
             </div>
-            <div className="flex justify-center">
-              <Button label={`Load more ${jobTitle || "N/a"} jobs in ${jobLocation || "N/a"}`} />
-            </div>
+            {page < totalPages && (
+              <div className="flex justify-center">
+                <Button label={`Load more ${jobTitle || "N/a"} jobs in ${jobLocation || "N/a"}`} onClick={handleLoadMore} />
+              </div>
+            )}
           </div>
         </section>
       )}

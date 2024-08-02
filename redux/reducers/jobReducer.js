@@ -1,6 +1,9 @@
 import { types } from "../types/types";
 const intitalState = {
-  jobDetails: {},
+  jobDetails: {
+    items: [],
+    pagination: {},
+  },
   popularJobSearch: {},
   jobLocationsNearby: {},
 };
@@ -10,7 +13,10 @@ const jobReducer = (state = intitalState, action) => {
     case types.JOB_SEARCH:
       return {
         ...state,
-        jobDetails: action.payload,
+        jobDetails: {
+          items: [...state.jobDetails.items, ...action.payload.items],
+          pagination: action.payload.pagination,
+        },
       };
     case types.POPULAR_JOB_SEARCHES:
       return {
