@@ -119,6 +119,7 @@ function JobPageContent() {
         <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
           <div className="max-w-7xl md:mx-auto">
             <div>
+
               {jobDetailsData?.items.map((item, index) => {
                 return (
                   <JobCard
