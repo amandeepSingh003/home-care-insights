@@ -7,20 +7,20 @@ const api = async (
   urlEndPoint,
   data = {},
   params = {},
-  header = {}
+  headers = {}
 ) => {
   try {
-    let headers = {
-      "Content-Type": "application/json",
-      ...header,
-    };
-    let response = await axios({
+    const config = {
       method,
       url: BASE_URL + urlEndPoint,
       data,
-      headers,
       params,
-    });
+      headers: {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+    };
+    let response = await axios(config);
 
     let res = response.data;
     return res;

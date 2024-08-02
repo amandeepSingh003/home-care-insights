@@ -1,12 +1,49 @@
-import React from "react";
-
+import React, { useState, useEffect, useCallback } from "react";
+import AutocompleteList from './AutocompleteList';
 
 const SearchForm = ({
   jobTitle,
   jobLocation,
   handleChange,
   handleSubmit,
+  searchResults
 }) => {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const debounce = (func, delay) => {
+    let debounceTimer;
+    return function (...args) {
+      const context = this;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    };
+  };
+
+  const fetchSuggestions = (value) => {
+    if (value && Array.isArray(searchResults)) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 300), [searchResults]);
+
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    handleChange({ name: 'jobLocation', value: value });
+    debouncedFetchSuggestions(value);
+  };
+
+  const handleLocationSelect = (location) => {
+    const { region, city, country } = location
+    handleChange({ name: 'jobLocation', value: `${region}, ${city}, ${country}` });
+    handleChange({ name: 'city', value: city });
+    handleChange({ name: 'region', value: region });
+    handleChange({ name: 'country', value: country });
+    setShowSuggestions(false);
+  };
+
   return (
     <div className="w-full px-2 md:px-28 py-10 bg-white rounded-lg shadow-md max-w-7xl mx-auto JobSearch">
       <form
@@ -16,7 +53,7 @@ const SearchForm = ({
         <div className="relative flex-1">
           <label
             htmlFor="job-title"
-            className="absolute  left-3 px-1 bg-white text-sm font-medium text-gray-700"
+            className="absolute left-3 px-1 bg-white text-sm font-medium text-gray-700"
           >
             Your next job title
           </label>
@@ -35,7 +72,7 @@ const SearchForm = ({
         <div className="relative flex-1">
           <label
             htmlFor="job-location"
-            className="absolute  left-3 px-1 bg-white text-sm font-medium text-gray-700"
+            className="absolute left-3 px-1 bg-white text-sm font-medium text-gray-700"
           >
             Job location
           </label>
@@ -43,15 +80,16 @@ const SearchForm = ({
             type="text"
             id="job-location"
             value={jobLocation}
-            onChange={(e) =>
-              handleChange({ name: "jobLocation", value: e.target.value })
-            }
+            onChange={handleLocationChange}
             name="job-location"
             placeholder="Anywhere, City, State, Zip Code, Remote"
             className="mt-2 block w-full px-3 py-3 border border-black rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
           />
+          {showSuggestions && (
+            <AutocompleteList suggestions={searchResults} onSelect={handleLocationSelect} />
+          )}
         </div>
-        <div className=" md:w-fit grid md:flex  md:items-center space-x-4">
+        <div className="md:w-fit grid md:flex md:items-center space-x-4">
           <button
             type="submit"
             disabled={!jobLocation && !jobTitle}
@@ -59,13 +97,6 @@ const SearchForm = ({
           >
             Search Job &rarr;
           </button>
-          {/* TODO: */}
-          {/* <a
-            href="#"
-            className="text-sm font-medium text-teal-600 hover:text-teal-500 text-center mt-4 md:m-0"
-          >
-            Advanced Search
-          </a> */}
         </div>
       </form>
     </div>

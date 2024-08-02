@@ -61,19 +61,26 @@ export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  let { allLocations: searchResults } = useSelector((state) => state.dashboard);
   let popularJobSearches = useSelector((state) => state.job.popularJobSearch);
   let faqData = useSelector((state) => state.otherReducer.faqData);
 
   const [data, setData] = useState({
     jobTitle: "",
     jobLocation: "",
+    city: "",
+    region: "",
+    country: ""
   });
 
   useEffect(() => {
-    dispatch(getLocationsAutoComplete("ca"));
     dispatch(getPopularJobSearches());
     dispatch(getFAQs());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getLocationsAutoComplete(data.jobLocation));
+  }, [dispatch, data.jobLocation]);
 
   const handleChange = ({ name, value }) => {
     const formErrors = allValidations(name, value, data);
@@ -84,7 +91,7 @@ export default function Home() {
     e.preventDefault();
     if (!data.jobLocation && !data.jobTitle) return
     router.push(
-      `/job?jobTitle=${data.jobTitle}&jobLocation=${data.jobLocation}`
+      `/job?jobTitle=${data.jobTitle}&city=${data.city}&region=${data.region}&country=${data.country}`
     );
   };
 
@@ -107,6 +114,7 @@ export default function Home() {
               jobLocation={data.jobLocation}
               handleChange={handleChange}
               handleSubmit={handleSubmit}
+              searchResults={searchResults || []}
             />
             <p className="mt-10 text-center md:w-9/12 md:mx-auto">
               Browse real-time insights and research your next job in the broad
@@ -300,7 +308,7 @@ export default function Home() {
               Frequently asked questions about flying from New York to Paris
             </h2>
             <div>
-              <FaqAccordion items={faqData?.faq} />
+              <FaqAccordion faqs={faqData?.faq} />
             </div>
           </div>
         </section>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 
 
-const FaqAccordion = ({ items }) => {
+const FaqAccordion = ({ faqs }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const handleToggle = (index) => {
@@ -12,7 +12,7 @@ const FaqAccordion = ({ items }) => {
 
   return (
     <div className="w-full    bg-gray-50">
-      {items.map((item, index) => (
+      {faqs?.map((item, index) => (
         <div key={index} className="border-gray-200 mb-4">
           <button
             onClick={() => handleToggle(index)}

@@ -64,13 +64,49 @@ const jobLocationsNearby = () => async (dispatch) => {
   dispatch(showLoaderAction());
 
   try {
-    const res = await api(
-      "get",
-      `${Constants.END_POINT.JOB_LOCATIONS_NEARBY}?localityName=Conyers&regionName=Georgia`,
-      {},
-      {},
-      { "X-Auth-Token": "93232028-a918-459d-8e1c-27396b97be57" }
-    );
+    // const res = await api(
+    //   "get",
+    //   `${Constants.END_POINT.JOB_LOCATIONS_NEARBY}?localityName=Conyers&regionName=Georgia`,
+    //   {},
+    //   {},
+    //   { "X-Auth-Token": "1652bbc0-d9f8-453a-a724-ec1a424ed430" }
+    // );
+
+    const res = {
+      data: [
+        {
+          localityName: "Milstead",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+        {
+          localityName: "Hi Roc Shores",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+        {
+          localityName: "Lakeview Estates",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+        {
+          localityName: "Lake Capri",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+        {
+          localityName: "Almon",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+        {
+          localityName: "Collinsville",
+          regionName: "Georgia",
+          countryIsoCode: "US",
+        },
+      ],
+    };
+
     dispatch({
       type: types.JOB_LOCATIONS_NEARBY,
       payload: res,
