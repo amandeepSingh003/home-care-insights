@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import image from "../assets/images/image.png";
 import { useSearchParams } from "next/navigation";
 import { getFAQs } from "../../redux/actions/otherActions";
-import { jobDetails, jobLocationsNearby } from "../../redux/actions/jobActions";
+import { jobDetails, jobLocationsNearby, salaryHistogram, percentPerJobs } from "../../redux/actions/jobActions";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import JobMarketAnalysis from "../components/JobMarketAnalysis";
@@ -44,6 +44,8 @@ function JobPageContent() {
   const faqData = useSelector((state) => state.otherReducer.faqData);
   const jobDetailsData = useSelector((state) => state.job.jobDetails);
   const jobLocationsNearbyData = useSelector((state) => state.job.jobLocationsNearby.data);
+  const salaryHistogramData = useSelector((state) => state.job.salaryHistogram.results);
+  const percentPerJobsData = useSelector((state) => state.job.percentPerJobs.results);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +54,8 @@ function JobPageContent() {
         await dispatch(getFAQs());
         await dispatch(jobDetails({ jobTitle, page }));
         await dispatch(jobLocationsNearby({ jobTitle }));
+        await dispatch(salaryHistogram());
+        await dispatch(percentPerJobs());
       } catch (error) {
         console.error("Failed to fetch data", error);
       } finally {
@@ -101,18 +105,47 @@ function JobPageContent() {
   }
 
   const pieData = [
-    { name: "Full-Time", value: 900, color: "#5BEDF0" },
-    { name: "Part-Time", value: 100, color: "#4CC5C7" },
-    { name: "Other", value: 100, color: "#3C9C9E" },
-    { name: "Contract", value: 100, color: "#1D4C4D" },
+    { name: "Full-Time", color: "#5BEDF0" },
+    { name: "Part-Time", color: "#4CC5C7" },
+    { name: "Other", color: "#3C9C9E" },
+    { name: "Contract", color: "#1D4C4D" },
+    { name: "PRN", color: "#ACCFD1" },
+    // { name: "Full-Time", value: 900, color: "#5BEDF0" },
+    // { name: "Part-Time", value: 100, color: "#4CC5C7" },
+    // { name: "Other", value: 100, color: "#3C9C9E" },
+    // { name: "Contract", value: 100, color: "#1D4C4D" },
   ];
 
+  const colorMap = pieData.reduce((acc, item) => {
+    acc[item.name] = item.color;
+    return acc;
+  }, {});
+
+  const updatedPieData = percentPerJobsData.map(item => ({
+    name: item.key,
+    value: item.value,
+    color: colorMap[item.key] || "#000000",
+  }));
+
   const barData = [
-    { name: "$25", value: 25, color: "#5BEDF0" },
-    { name: "$30", value: 30, color: "#4CC5C7" },
-    { name: "$35", value: 35, color: "#4CC5C7" },
-    { name: "$50", value: 50, color: "#3C9C9E" },
+    { color: "#5BEDF0" },
+    { color: "#4CC5C7" },
+    { color: "#4CC5C7" },
+    { color: "#3C9C9E" },
+    { color: "#ACCFD1" },
+    // { name: "$25", value: 25, color: "#5BEDF0" },
+    // { name: "$30", value: 30, color: "#4CC5C7" },
+    // { name: "$35", value: 35, color: "#4CC5C7" },
+    // { name: "$50", value: 50, color: "#3C9C9E" },
   ];
+
+  const colorMapBar = barData.map(item => item.color);
+
+  const updatedBarData = salaryHistogramData.map((item, index) => ({
+    name: `$${item.key}`,
+    value: item.value,
+    color: colorMapBar[index % colorMapBar.length],
+  }));
 
   return (
     <>
@@ -187,9 +220,9 @@ function JobPageContent() {
       <section className="p-4 md:p-8 space-y-5 ">
         <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto  p-4 md:p-10 MapWrapper ">
           <h2 className="text-2xl font-normal mb-8">
-            Registered Nurse Remote Jobs Market Analysis
+            {jobTitle} Remote Jobs Market Analysis
           </h2>
-          <JobMarketAnalysis pieData={pieData} barData={barData} />
+          <JobMarketAnalysis pieData={updatedPieData} barData={updatedBarData} />
         </div>
       </section>
       {jobLocationsNearbyData && jobLocationsNearbyData.length > 0 && (
@@ -203,32 +236,6 @@ function JobPageContent() {
                 </div>
               ))}
             </div>
-            {/* <div className="grid grid-rows-1 grid-col-1 md:grid-col-3 grid-flow-col gap-4 mt-10 PopularJobwrapper">
-            <div className="hidden md:block">
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-            </div>
-            <div className="hidden md:block">
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-            </div>
-            <div>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-              <h4>Core Job Title Jobs in City, State</h4>
-            </div>
-          </div> */}
           </div>
         </section>
       )}

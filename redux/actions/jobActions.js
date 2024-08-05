@@ -118,4 +118,100 @@ const jobLocationsNearby = () => async (dispatch) => {
   }
 };
 
-export { jobDetails, getPopularJobSearches, jobLocationsNearby };
+const salaryHistogram = () => async (dispatch) => {
+  dispatch(showLoaderAction());
+
+  try {
+    // const res = await api(
+    //   "get",
+    //   `${Constants.END_POINT.SALARY_HISTOGRAM}`,
+    // );
+
+    const res = {
+      results: [
+        {
+          key: 10,
+          value: 4,
+        },
+        {
+          key: 20,
+          value: 33,
+        },
+        {
+          key: 30,
+          value: 57,
+        },
+        {
+          key: 40,
+          value: 12,
+        },
+        {
+          key: 50,
+          value: 12,
+        },
+      ],
+    };
+
+    dispatch({
+      type: types.SALARY_HISTOGRAM,
+      payload: res,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    dispatch(hideLoaderAction());
+  }
+};
+
+const percentPerJobs = () => async (dispatch) => {
+  dispatch(showLoaderAction());
+
+  try {
+    // const res = await api(
+    //   "get",
+    //   `${Constants.END_POINT.PERCENT_PER_JOBS}`,
+    // );
+
+    const res = {
+      results: [
+        {
+          key: "Full-Time",
+          value: 1143,
+        },
+        {
+          key: "Part-Time",
+          value: 209,
+        },
+        {
+          key: "Other",
+          value: 81,
+        },
+        {
+          key: "Contract",
+          value: 29,
+        },
+        {
+          key: "PRN",
+          value: 2,
+        },
+      ],
+    };
+
+    dispatch({
+      type: types.PERCENT_PER_JOBS,
+      payload: res,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    dispatch(hideLoaderAction());
+  }
+};
+
+export {
+  jobDetails,
+  getPopularJobSearches,
+  jobLocationsNearby,
+  salaryHistogram,
+  percentPerJobs,
+};

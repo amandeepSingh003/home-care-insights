@@ -6,6 +6,8 @@ const intitalState = {
   },
   popularJobSearch: {},
   jobLocationsNearby: {},
+  salaryHistogram: {},
+  percentPerJobs: {},
 };
 
 const jobReducer = (state = intitalState, action) => {
@@ -27,6 +29,16 @@ const jobReducer = (state = intitalState, action) => {
       return {
         ...state,
         jobLocationsNearby: action.payload,
+      };
+    case types.SALARY_HISTOGRAM:
+      return {
+        ...state,
+        salaryHistogram: action.payload,
+      };
+    case types.PERCENT_PER_JOBS:
+      return {
+        ...state,
+        percentPerJobs: action.payload,
       };
     default:
       return { ...state };
