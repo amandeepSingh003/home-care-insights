@@ -52,10 +52,25 @@ function JobPageContent() {
       setLoading(true);
       try {
         await dispatch(getFAQs());
-        await dispatch(jobDetails({ jobTitle, page }));
-        await dispatch(jobLocationsNearby({ jobTitle }));
         await dispatch(salaryHistogram());
         await dispatch(percentPerJobs());
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dispatch])
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await dispatch(jobDetails({ jobTitle, page }));
+        await dispatch(jobLocationsNearby({ jobTitle }));
       } catch (error) {
         console.error("Failed to fetch data", error);
       } finally {
@@ -239,7 +254,7 @@ function JobPageContent() {
           </div>
         </section>
       )}
-      <section className="p-6 md:p-2 mb-6 md:px-8">
+      <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="max-w-7xl md:mx-auto">
           <div>
             <h2 className="text-2xl font-normal mb-8">FAQs</h2>

@@ -9,7 +9,7 @@ const Breadcrumbs = ({ items }) => {
       <ol className="flex ">
         {items.map((item, index) => (
           <li key={index} className="flex items-center">
-            {index > 0 && <span className="mx-1 text-black-400"></span>}
+            {index > 0 && <span className="mx-1 text-black-400">&gt;</span>}
             {index < items.length - 1 ? (
               <Link href={item.href}>
                 <p className="text-teal hover:text-teal-800 text-xs">

@@ -30,7 +30,9 @@ const JobCard = ({
       <div className="flex items-center mb-2">
         <Image src={img} alt={companyName} className=" mr-4" />
         <div>
-          <h3 className="text-lg font-medium text-teal">{jobTitle}</h3>
+          <a href={buttonLink} target="_blank">
+            <h3 className="text-lg font-medium text-teal">{jobTitle}</h3>
+          </a>
           <div className="flex items-center">
             <span className="mr-1 text-xs text-black mr-2">{companyName}</span>
             {rating && (
