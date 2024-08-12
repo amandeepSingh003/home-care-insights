@@ -4,50 +4,17 @@ import JobSearch from "./components/JobSearch";
 import { Card, CustomCard } from "./components/Card";
 import CompanyJobStats from "./components/CompanyJobStats";
 import FaqAccordion from "./components/Faq";
-// import JobsByStateMapWithImage from "../components/Map";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getLocationsAutoComplete } from "../redux/actions/dashboardActions";
-import { getPopularJobSearches } from "../redux/actions/jobActions";
-import { getFAQs } from "../redux/actions/otherActions";
-import { allValidations } from "../utils/formValidations";
-import { useRouter } from "next/navigation";
-
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getLocationsAutoComplete } from "../services/actions/dashboardActions";
+import { getPopularJobSearches } from "../services/actions/jobActions";
+import { getFAQs } from "@/services/actions/otherActions";
 
 const JobsByStateMapWithImage = dynamic(
   () => import("./components/Map"),
   { ssr: false }
 );
-
-const faqItems = [
-  {
-    question: "How long does it take to fly from New York to Paris?",
-    answer:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    question: "When are the cheapest days to fly from New York to Paris?",
-    answer:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    question:
-      "Which airlines provide the cheapest flights from New York to Paris?",
-    answer:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    question: "When are direct flights from New York to Paris?",
-    answer:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    question: "Which airlines have direct flights from New York to Paris?",
-    answer:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-];
 
 const legendData = [
   { color: "#00838f", percentage: "13.76%" },
@@ -58,12 +25,7 @@ const legendData = [
 ];
 
 export default function Home() {
-  const dispatch = useDispatch();
   const router = useRouter();
-
-  let { allLocations: searchResults } = useSelector((state) => state.dashboard);
-  let popularJobSearches = useSelector((state) => state.job.popularJobSearch);
-  let faqData = useSelector((state) => state.otherReducer.faqData);
 
   const [data, setData] = useState({
     jobTitle: "",
@@ -73,34 +35,42 @@ export default function Home() {
     country: ""
   });
 
-  useEffect(() => {
-    dispatch(getPopularJobSearches());
-    dispatch(getFAQs());
-  }, [dispatch]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [popularJobSearches, setPopularJobSearches] = useState([]);
+  const [faqData, setFaqData] = useState([]);
 
   useEffect(() => {
-    dispatch(getLocationsAutoComplete(data.jobLocation));
-  }, [dispatch, data.jobLocation]);
+    const fetchData = async () => {
+      const locationResults = await getLocationsAutoComplete(data.jobLocation);
+      const jobSearches = await getPopularJobSearches();
+      const faqs = await getFAQs();
+
+      setSearchResults(locationResults || []);
+      setPopularJobSearches(jobSearches || []);
+      setFaqData(faqs || []);
+    };
+
+    fetchData();
+  }, [data.jobLocation]);
 
   const handleChange = ({ name, value }) => {
-    const formErrors = allValidations(name, value, data);
-    setData((prev) => ({ ...prev, [name]: value, formErrors }));
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.jobLocation && !data.jobTitle) return
+    if (!data.jobLocation && !data.jobTitle) return;
     router.push(
-      `/job?jobTitle=${data.jobTitle}&city=${data.city}&region=${data.region}&country=${data.country}`
+      `/job?jobTitle=${data.jobTitle}&city=${data.city}&region=${data.region}&country=${data.country}&page=1`
     );
   };
 
   return (
     <>
       <section className="p-4 md:p-8">
-        <div className="m-4 md:mt-12  max-w-7xl md:mx-auto">
-          <div className="text-center MainHeading ">
-            <h2 className="text-2xl	md:text-5xl	">
+        <div className="m-4 md:mt-12 max-w-7xl md:mx-auto">
+          <div className="text-center MainHeading">
+            <h2 className="text-2xl	md:text-5xl">
               Find a Better Job in the
               <br />
               <span className="text-2xl md:text-6xl">
@@ -114,7 +84,7 @@ export default function Home() {
               jobLocation={data.jobLocation}
               handleChange={handleChange}
               handleSubmit={handleSubmit}
-              searchResults={searchResults || []}
+              searchResults={searchResults}
             />
             <p className="mt-10 text-center md:w-9/12 md:mx-auto">
               Browse real-time insights and research your next job in the broad
@@ -132,9 +102,9 @@ export default function Home() {
       </section>
 
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
+        <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
-            Top 10 Employer with the Most New Jobs
+            Top 10 Employers with the Most New Jobs
           </h2>
           <CompanyJobStats
             companyName="Visiting Angels"
@@ -180,7 +150,7 @@ export default function Home() {
             </div>
             <div className="col">
               <h1 className="text-2xl font-normal mb-8">
-                Top 10 Core Title Most New Jobs
+                Top 10 Core Titles with Most New Jobs
               </h1>
               <CompanyJobStats
                 companyName="Visiting Angels"
@@ -209,91 +179,45 @@ export default function Home() {
       </section>
 
       <section className="p-4 md:p-8 space-y-5 ">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto  p-4 md:p-10 MapWrapper ">
+        <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto p-4 md:p-10 MapWrapper">
           <h2 className="text-2xl font-normal mb-8">New Jobs by State</h2>
           <JobsByStateMapWithImage
-            // imageUrl="/us-map.png"
             legendData={legendData}
           />
         </div>
       </section>
+
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
+        <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
-            Resources the Talent and Talent Acquisition Pros in the Home Health
-            Industry
+            Resources for Talent and Talent Acquisition Pros in the Home Health Industry
           </h2>
           <p className="font-medium">
-            Daily, Weekly and Monthly Industry Reports
+            Daily, Weekly, and Monthly Industry Reports
           </p>
 
           <div className="md:grid grid-rows-none grid-cols-1 md:grid-rows-2 md:grid-cols-3 grid-flow-col gap-4 mt-10">
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
-
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
-
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
-            <CustomCard>
-              <p className="text-primary">
-                Ranking of the most valuable Home Health company in public
-                markets
-              </p>
-              <div className="text-end">
-                <span className="text-sm">05/01 - 05/07</span>
-              </div>
-            </CustomCard>
+            {[...Array(6)].map((_, index) => (
+              <CustomCard key={index}>
+                <p className="text-primary">
+                  Ranking of the most valuable Home Health company in public markets
+                </p>
+                <div className="text-end">
+                  <span className="text-sm">05/01 - 05/07</span>
+                </div>
+              </CustomCard>
+            ))}
           </div>
         </div>
       </section>
+
       <section className="p-4 md:p-8 space-y-5">
-        <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
+        <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
             Popular Job Searches in Home Health this week
           </h2>
           <div className="grid grid-rows-1 grid-cols-1 md:grid-cols-3 grid-flow-row gap-4 mt-10 PopularJobwrapper">
-            {popularJobSearches.industries && popularJobSearches.industries.length > 0 && popularJobSearches.industries.map((industry, index) => (
+            {popularJobSearches.industries?.map((industry, index) => (
               <div key={index}>
                 <h4>{industry.term}</h4>
               </div>
@@ -301,15 +225,12 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {faqData.faq && faqData.faq.length && (
+
+      {faqData.faq?.length > 0 && (
         <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-          <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
-            <h2 className="text-2xl font-normal mb-8">
-              Frequently asked questions about flying from New York to Paris
-            </h2>
-            <div>
-              <FaqAccordion faqs={faqData?.faq} />
-            </div>
+          <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
+            <h2 className="text-2xl font-normal mb-8">FAQs</h2>
+            <FaqAccordion faqData={faqData.faq} />
           </div>
         </section>
       )}

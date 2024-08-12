@@ -1,31 +1,20 @@
-"use client";
-
-import React, { useEffect, useState, useMemo } from "react";
 import Breadcrumbs from "../components/BreadCrumbs";
 import Button from "../components/Button";
 import JobCard from "../components/JobCard";
 import { Card } from "../components/Card";
-import { Suspense } from 'react'
 import CompanyJobStats from "../components/CompanyJobStats";
 import FaqAccordion from "../components/Faq";
-import { useRouter } from "next/navigation";
 import image from "../assets/images/image.png";
-import { useSearchParams } from "next/navigation";
-import { getFAQs } from "../../redux/actions/otherActions";
-import { jobDetails, jobLocationsNearby, salaryHistogram, percentPerJobs } from "../../redux/actions/jobActions";
-import { useDispatch, useSelector } from "react-redux";
+import { jobDetails, jobLocationsNearby, salaryHistogram, percentPerJobs } from "@/services/actions/jobActions";
 import Link from "next/link";
 import JobMarketAnalysis from "../components/JobMarketAnalysis";
+import { getFAQs } from "@/services/actions/otherActions";
 
-function JobPageContent() {
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const jobTitle = searchParams.get("jobTitle") || "N/a";
-  const city = searchParams.get("city") || "";
-  const region = searchParams.get("region") || "";
-  const country = searchParams.get("country") || "";
+export default async function JobPageContent({ searchParams }) {
+  const jobTitle = searchParams.jobTitle || "N/a";
+  const city = searchParams.city || "";
+  const region = searchParams.region || "";
+  const country = searchParams.country || "";
 
   const buildLocationString = (city, region, country) => {
     let location = [];
@@ -37,87 +26,26 @@ function JobPageContent() {
 
   const jobLocation = buildLocationString(city, region, country);
 
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  let page = parseInt(searchParams.page || "1", 10);
+  let totalPages = 2;
 
-  const faqData = useSelector((state) => state.otherReducer.faqData);
-  const jobDetailsData = useSelector((state) => state.job.jobDetails);
-  const jobLocationsNearbyData = useSelector((state) => state.job.jobLocationsNearby.data);
-  const salaryHistogramData = useSelector((state) => state.job.salaryHistogram.results);
-  const percentPerJobsData = useSelector((state) => state.job.percentPerJobs.results);
+  const faqData = await getFAQs()
+  const jobLocationsNearbyData = await jobLocationsNearby({ jobTitle })
+  const salaryHistogramData = await salaryHistogram()
+  const percentPerJobsData = await percentPerJobs()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        await dispatch(getFAQs());
-        await dispatch(salaryHistogram());
-        await dispatch(percentPerJobs());
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [dispatch])
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        await dispatch(jobDetails({ jobTitle, page }));
-        await dispatch(jobLocationsNearby({ jobTitle }));
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [dispatch, jobTitle, page]);
-
-  useEffect(() => {
-    if (jobDetailsData?.pagination) {
-      const { totalItems, totalPageItems } = jobDetailsData.pagination;
-      setTotalPages(Math.ceil(totalItems / totalPageItems));
-    }
-  }, [jobDetailsData]);
+  const jobDetailsData = await jobDetails({ jobTitle, page })
 
   const handleLoadMore = () => {
-    if (page < totalPages) {
-      setPage((prevPage) => prevPage + 1);
-    }
+    const nextPage = page + 1;
+    return `/job?jobTitle=${jobTitle}&city=${city}&region=${region}&country=${country}&page=${nextPage}`;
   };
 
+  const totalItems = jobDetailsData?.pagination?.totalItems || 0;
+  const itemsPerPage = jobDetailsData?.pagination?.totalPageItems || 10;
+  totalPages = Math.ceil(totalItems / itemsPerPage);
+
   const faqItems = faqData.faq || [];
-
-  const jobCards = useMemo(() => {
-    return jobDetailsData?.items?.map((item, index) => (
-      <JobCard
-        key={index}
-        jobTitle={item.title || "N/a"}
-        img={image}
-        jobType={item.jobType || "N/a"}
-        salaryRange={item.estimatedSalary}
-        location={item.location || "N/a"}
-        jobSummary={item.jobSummary || "N/a"}
-        buttonLabel="Apply Now →"
-        buttonLink={item.jobUrl}
-        companyName={item.companyName || "N/a"}
-        postingDate={item.publishedAt}
-        rating={item.rating}
-      />
-    ));
-  }, [jobDetailsData]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   const pieData = [
     { name: "Full-Time", color: "#5BEDF0" },
@@ -125,10 +53,6 @@ function JobPageContent() {
     { name: "Other", color: "#3C9C9E" },
     { name: "Contract", color: "#1D4C4D" },
     { name: "PRN", color: "#ACCFD1" },
-    // { name: "Full-Time", value: 900, color: "#5BEDF0" },
-    // { name: "Part-Time", value: 100, color: "#4CC5C7" },
-    // { name: "Other", value: 100, color: "#3C9C9E" },
-    // { name: "Contract", value: 100, color: "#1D4C4D" },
   ];
 
   const colorMap = pieData.reduce((acc, item) => {
@@ -148,10 +72,6 @@ function JobPageContent() {
     { color: "#4CC5C7" },
     { color: "#3C9C9E" },
     { color: "#ACCFD1" },
-    // { name: "$25", value: 25, color: "#5BEDF0" },
-    // { name: "$30", value: 30, color: "#4CC5C7" },
-    // { name: "$35", value: 35, color: "#4CC5C7" },
-    // { name: "$50", value: 50, color: "#3C9C9E" },
   ];
 
   const colorMapBar = barData.map(item => item.color);
@@ -188,19 +108,36 @@ function JobPageContent() {
           </div>
         </div>
       </section>
-      {jobCards?.length > 0 && (
+      {jobDetailsData?.items?.length > 0 && (
         <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
           <div className="max-w-7xl md:mx-auto">
-            <div>{jobCards}</div>
+            <div>{jobDetailsData?.items?.map((item, index) => (
+              <JobCard
+                key={index}
+                jobTitle={item.title || "N/a"}
+                img={image}
+                jobType={item.jobType || "N/a"}
+                salaryRange={item.estimatedSalary}
+                location={item.location || "N/a"}
+                jobSummary={item.jobSummary || "N/a"}
+                buttonLabel="Apply Now →"
+                buttonLink={item.jobUrl}
+                companyName={item.companyName || "N/a"}
+                postingDate={item.publishedAt}
+                rating={item.rating}
+              />))}
+            </div>
             {page < totalPages && (
               <div className="flex justify-center">
-                <Button label={`Load more ${jobTitle} jobs in ${jobLocation}`} onClick={handleLoadMore} />
+                <Link href={handleLoadMore()}>
+                  <Button label={`Load more ${jobTitle} jobs in ${jobLocation}`} />
+                </Link>
               </div>
             )}
           </div>
         </section>
       )}
-      {!loading && (!jobCards || jobCards.length === 0) && (
+      {(!jobDetailsData?.items || jobDetailsData?.items?.length === 0) && (
         <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
           <div className="max-w-7xl md:mx-auto">
             <p>No jobs found for {jobTitle} within 25 miles of {jobLocation}</p>
@@ -270,11 +207,3 @@ function JobPageContent() {
   );
 }
 
-
-export default function Page() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <JobPageContent />
-    </Suspense>
-  );
-}

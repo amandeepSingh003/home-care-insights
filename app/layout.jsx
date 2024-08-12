@@ -7,7 +7,6 @@ import Footer from "./layout/Footer";
 
 // const inter = Inter({ subsets: ["latin"] });
 import { Poppins } from "next/font/google";
-import { ClientProvider } from "./components/clientProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,7 +29,7 @@ export default function RootLayout({
       <body className={`${poppins.className} `}>
         <Header />
         <div className="main-wrapper">
-          <ClientProvider>{children}</ClientProvider>
+          {children}
         </div>
         <Footer />
       </body>
