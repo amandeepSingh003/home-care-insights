@@ -1,3 +1,5 @@
+// Job Card component
+
 "use client"
 
 import React, { useState } from "react";
@@ -21,10 +23,12 @@ const JobCard = ({
 
   const [showFullSummary, setShowFullSummary] = useState(false);
 
+  // Toggle full summary view
   const handleViewMoreSummary = () => {
     setShowFullSummary(true);
   };
 
+  // Truncate summary on first load if it exceeds 300 characters
   const truncatedSummary = jobSummary.length > 300 ? jobSummary.substring(0, 300) + '...' : jobSummary;
 
   return (
@@ -37,6 +41,7 @@ const JobCard = ({
           </a>
           <div className="flex items-center">
             <span className="mr-1 text-xs text-black mr-2">{companyName}</span>
+            {/* If rating is provided */}
             {rating && (
               <div className="flex items-center">
                 {Array.from({ length: 5 }).map((_, index) => (
@@ -74,6 +79,7 @@ const JobCard = ({
         </span>
       </div>
       <p className="mb-4 text-sm text-black">
+        {/* Using dangerouslySetInnerHTML to conserve formatting */}
         <span
           dangerouslySetInnerHTML={{ __html: showFullSummary ? jobSummary : truncatedSummary }}
         />

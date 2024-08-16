@@ -1,3 +1,5 @@
+// FAQ component
+
 "use client";
 
 import React, { useState } from "react";
@@ -6,12 +8,14 @@ import React, { useState } from "react";
 const FaqAccordion = ({ faqs }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
+  // Toggle active FAQ
   const handleToggle = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
   return (
     <div className="w-full    bg-gray-50">
+      {/* Mapping FAQ data */}
       {faqs?.map((item, index) => (
         <div key={index} className="border-gray-200 mb-4">
           <button
@@ -35,6 +39,7 @@ const FaqAccordion = ({ faqs }) => {
               />
             </svg>
           </button>
+          {/* Display response for active FAQ */}
           {activeIndex === index && (
             <div className="p-4 bg-white text-gray-600 text-sm">
               {item.answer}

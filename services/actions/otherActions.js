@@ -1,6 +1,7 @@
 import api from "../../services/api";
 import Constants from "../../services/constants";
 
+// FAQs action
 const getFAQs = async () => {
   try {
     // const res = await api(

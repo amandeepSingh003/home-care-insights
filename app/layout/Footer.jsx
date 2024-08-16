@@ -1,5 +1,9 @@
+// Footer component
+
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+
 import Logo from "../assets/images/logo.svg";
 
 export default function Footer() {
@@ -16,29 +20,29 @@ export default function Footer() {
             </h4>
             <ul className="text-lg  transition-all duration-500">
               <li className="mb-3 footLink">
-                <a href="javascript:;" className="hover:text-black">
+                <Link href="#" className="hover:text-black">
                   Home
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   About
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Pricing
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Features
-                </a>
+                </Link>
               </li>
               <li className="footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Pro Version
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -49,29 +53,29 @@ export default function Footer() {
             </h4>
             <ul className="text-lg  transition-all duration-500">
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Figma UI System
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Icons Assets
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Responsive Blocks
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Components Library
-                </a>
+                </Link>
               </li>
               <li className="footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Plugin Guide
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -82,29 +86,29 @@ export default function Footer() {
             </h4>
             <ul className="text-lg  transition-all duration-500">
               <li className="mb-3 footLink">
-                <a href="javascript:;" className="hover:text-black">
+                <Link href="#" className="hover:text-black">
                   FAQs
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Quick Start
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Documentation
-                </a>
+                </Link>
               </li>
               <li className="mb-3 footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   User Guide
-                </a>
+                </Link>
               </li>
               <li className="footLink">
-                <a href="javascript:;" className=" hover:text-black">
+                <Link href="#" className=" hover:text-black">
                   Plugin Guide
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -112,26 +116,26 @@ export default function Footer() {
 
         <div className="hidden py-7 border-y border-gray-200 sm:block">
           <div className="flex items-center justify-center flex-col lg:space-y-0 space-y-8 lg:justify-between lg:flex-row">
-            <a href="/" className="-m-1.5 p-1.5 flex 	items-center gap-2">
+            <Link href="/" className="-m-1.5 p-1.5 flex 	items-center gap-2">
               <Image alt="" src={Logo} className="h-8 w-auto" />
               <span className="text-black	items-center ">
                 Home Care Insights
               </span>
-            </a>
+            </Link>
 
             <div className="flex mt-4 space-x-4 sm:justify-center sm:mt-0 footLink">
-              <a href="javascript:;" className="">
+              <Link href="#" className="">
                 Privacy Police
-              </a>
-              <a href="javascript:;" className="">
+              </Link>
+              <Link href="#" className="">
                 California Privacy Notice
-              </a>
-              <a href="javascript:;" className="">
+              </Link>
+              <Link href="#" className="">
                 Terms of Use
-              </a>
-              <a href="javascript:;" className="">
+              </Link>
+              <Link href="#" className="">
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>

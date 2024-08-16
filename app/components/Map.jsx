@@ -1,3 +1,5 @@
+// Map component
+
 "use client";
 
 import React, { useEffect, useRef } from "react";
@@ -101,6 +103,7 @@ const JobsByStateMapWithImage = ({ legendData }) => {
   return (
     <div className="md:grid grid-row-1 grid-cols-2 items-center gap-36">
       <div className="w-full justify-center">
+        {/* Map reference div */}
         <div
           id="map_election"
           ref={mapContainerRef}
@@ -108,6 +111,7 @@ const JobsByStateMapWithImage = ({ legendData }) => {
         ></div>
       </div>
       <div className="items-start mt-4 ml-12">
+        {/* Map Legend data */}
         {legendData.map((item, index) => (
           <div className="flex items-center mt-1" key={index}>
             <div

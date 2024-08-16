@@ -1,6 +1,7 @@
 import api from "../api";
 import Constants from "../constants";
 
+// Search locations action
 const getLocationsAutoComplete = async (query, limit = 5) => {
   try {
     const res = await api(

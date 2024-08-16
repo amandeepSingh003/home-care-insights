@@ -1,3 +1,5 @@
+// Company Job Stats component with rating
+
 import Image from "next/image";
 import React from "react";
 
@@ -19,6 +21,7 @@ const CompanyJobStats = ({
           <span className="text-base font-medium text-gray-700">
             {companyName}
           </span>
+          {/* If rating is provided */}
           {rating !== undefined && (
             <div className="flex items-center mt-1">
               {Array.from({ length: 5 }, (_, index) => (

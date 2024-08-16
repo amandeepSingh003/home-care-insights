@@ -1,5 +1,6 @@
+// API function for API calling
+
 import axios from "axios";
-// import { isAuthenticated, logout } from "./auth";
 import { BASE_URL } from "../constants";
 
 const api = async (

@@ -1,3 +1,5 @@
+// Constants for APIs
+
 export default class Constants {
   static END_POINT = {
     LOCATION_AUTOCOMPLETE: "/ca/localization/search-address",

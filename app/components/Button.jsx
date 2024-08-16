@@ -1,4 +1,4 @@
-// components/Button.tsx
+// Buttons component
 
 import React from "react";
 

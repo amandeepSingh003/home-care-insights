@@ -1,21 +1,25 @@
+// Root Home component
+
 "use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 import JobSearch from "./components/JobSearch";
 import { Card, CustomCard } from "./components/Card";
 import CompanyJobStats from "./components/CompanyJobStats";
 import FaqAccordion from "./components/Faq";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { getLocationsAutoComplete } from "../services/actions/dashboardActions";
 import { getPopularJobSearches } from "../services/actions/jobActions";
-import { getFAQs } from "@/services/actions/otherActions";
+import { getFAQs } from "../services/actions/otherActions";
 
 const JobsByStateMapWithImage = dynamic(
   () => import("./components/Map"),
   { ssr: false }
 );
 
+// Map legend data
 const legendData = [
   { color: "#00838f", percentage: "13.76%" },
   { color: "#00acc1", percentage: "0.45% to 5.05%" },
@@ -42,21 +46,30 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       const locationResults = await getLocationsAutoComplete(data.jobLocation);
-      const jobSearches = await getPopularJobSearches();
-      const faqs = await getFAQs();
-
       setSearchResults(locationResults || []);
-      setPopularJobSearches(jobSearches || []);
-      setFaqData(faqs || []);
     };
 
     fetchData();
   }, [data.jobLocation]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const jobSearches = await getPopularJobSearches();
+      const faqs = await getFAQs();
+
+      setPopularJobSearches(jobSearches || []);
+      setFaqData(faqs.faq || []);
+    };
+
+    fetchData();
+  }, []);
+
+  // State handler
   const handleChange = ({ name, value }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!data.jobLocation && !data.jobTitle) return;
@@ -79,6 +92,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="mt-12">
+            {/* Job search section */}
             <JobSearch
               jobTitle={data.jobTitle}
               jobLocation={data.jobLocation}
@@ -101,6 +115,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Top 10 section */}
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
@@ -178,6 +193,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Map section */}
       <section className="p-4 md:p-8 space-y-5 ">
         <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto p-4 md:p-10 MapWrapper">
           <h2 className="text-2xl font-normal mb-8">New Jobs by State</h2>
@@ -187,6 +203,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Resources for Talent section */}
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
@@ -211,13 +228,15 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Popular Job Searches section */}
       <section className="p-4 md:p-8 space-y-5">
         <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
             Popular Job Searches in Home Health this week
           </h2>
           <div className="grid grid-rows-1 grid-cols-1 md:grid-cols-3 grid-flow-row gap-4 mt-10 PopularJobwrapper">
-            {popularJobSearches.industries?.map((industry, index) => (
+            {/* Map first 15 popular job searches */}
+            {popularJobSearches.industries?.slice(0, 15)?.map((industry, index) => (
               <div key={index}>
                 <h4>{industry.term}</h4>
               </div>
@@ -226,14 +245,17 @@ export default function Home() {
         </div>
       </section>
 
-      {faqData.faq?.length > 0 && (
-        <section className="bg-gray-50 p-4 md:p-8 space-y-5">
-          <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
-            <h2 className="text-2xl font-normal mb-8">FAQs</h2>
-            <FaqAccordion faqData={faqData.faq} />
-          </div>
-        </section>
-      )}
+      {/* FAQs section */}
+      <section className="bg-gray-50 p-4 md:p-8 space-y-5">
+        <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
+          <h2 className="text-2xl font-normal mb-8">FAQs</h2>
+          {faqData.length > 0 ? (
+            <FaqAccordion faqs={faqData.slice(0, 10)} />
+          ) : (
+            <p>No FAQs available at the moment.</p>
+          )}
+        </div>
+      </section>
     </>
   );
 }

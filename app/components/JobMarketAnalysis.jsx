@@ -6,7 +6,6 @@ import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  // Legend,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -15,7 +14,6 @@ import {
 ChartJS.register(
   ArcElement,
   Tooltip,
-  // Legend,
   CategoryScale,
   LinearScale,
   BarElement
@@ -43,7 +41,6 @@ const JobMarketAnalysis = ({
     datasets: [
       {
         borderSkipped: false,
-
         label: "Value",
         data: barData.map((d) => d.value),
         backgroundColor: barData.map((d) => d.color),
@@ -84,10 +81,12 @@ const JobMarketAnalysis = ({
       <div className="flex flex-col lg:flex-row items-center gap-10">
         <div className="flex flex-col md:grid md:grid-cols-2 gap-10 items-center">
           <div className="w-64 h-64">
+            {/* Piechart */}
             <Pie data={pieChartData} />
           </div>
           <div className="mt-2 text-sm">
             <ul>
+              {/* Mapping piechart legend */}
               {pieData.map((entry, index) => (
                 <li key={index} className="flex items-center">
                   <span
@@ -102,6 +101,7 @@ const JobMarketAnalysis = ({
         </div>
         <div className="flex flex-col items-center mt-8 lg:mt-0 lg:ml-8">
           <div className="w-full">
+            {/* Bar chart */}
             <Bar data={barChartData} options={barChartOptions} />
           </div>
         </div>

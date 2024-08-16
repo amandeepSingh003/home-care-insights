@@ -1,11 +1,9 @@
-// "use server";
+// Root Layout component
 
-// import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 
-// const inter = Inter({ subsets: ["latin"] });
 import { Poppins } from "next/font/google";
 
 const poppins = Poppins({

@@ -1,5 +1,6 @@
-import React from "react";
+// Card component
 
+import React from "react";
 
 export const Card = ({
   totalJobs,

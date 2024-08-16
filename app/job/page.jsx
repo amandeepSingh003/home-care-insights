@@ -1,21 +1,27 @@
+// Job component
+
+import Link from "next/link";
+
 import Breadcrumbs from "../components/BreadCrumbs";
 import Button from "../components/Button";
 import JobCard from "../components/JobCard";
 import { Card } from "../components/Card";
 import CompanyJobStats from "../components/CompanyJobStats";
 import FaqAccordion from "../components/Faq";
+import JobMarketAnalysis from "../components/JobMarketAnalysis";
 import image from "../assets/images/image.png";
 import { jobDetails, jobLocationsNearby, salaryHistogram, percentPerJobs } from "@/services/actions/jobActions";
-import Link from "next/link";
-import JobMarketAnalysis from "../components/JobMarketAnalysis";
 import { getFAQs } from "@/services/actions/otherActions";
 
 export default async function JobPageContent({ searchParams }) {
+
+  // Get values from queryParams
   const jobTitle = searchParams.jobTitle || "N/a";
   const city = searchParams.city || "";
   const region = searchParams.region || "";
   const country = searchParams.country || "";
 
+  // location string handler
   const buildLocationString = (city, region, country) => {
     let location = [];
     if (city) location.push(city);
@@ -33,9 +39,9 @@ export default async function JobPageContent({ searchParams }) {
   const jobLocationsNearbyData = await jobLocationsNearby({ jobTitle })
   const salaryHistogramData = await salaryHistogram()
   const percentPerJobsData = await percentPerJobs()
+  const jobDetailsData = await jobDetails({ jobTitle, city, region, country, page })
 
-  const jobDetailsData = await jobDetails({ jobTitle, page })
-
+  // Load more handler - Navigates to next page records
   const handleLoadMore = () => {
     const nextPage = page + 1;
     return `/job?jobTitle=${jobTitle}&city=${city}&region=${region}&country=${country}&page=${nextPage}`;
@@ -47,6 +53,7 @@ export default async function JobPageContent({ searchParams }) {
 
   const faqItems = faqData.faq || [];
 
+  // Pie chart data with names and colors
   const pieData = [
     { name: "Full-Time", color: "#5BEDF0" },
     { name: "Part-Time", color: "#4CC5C7" },
@@ -55,17 +62,20 @@ export default async function JobPageContent({ searchParams }) {
     { name: "PRN", color: "#ACCFD1" },
   ];
 
+  // Pie chart colors
   const colorMap = pieData.reduce((acc, item) => {
     acc[item.name] = item.color;
     return acc;
   }, {});
 
+  // Pie chart data
   const updatedPieData = percentPerJobsData.map(item => ({
     name: item.key,
     value: item.value,
     color: colorMap[item.key] || "#000000",
   }));
 
+  // Bar chart colors
   const barData = [
     { color: "#5BEDF0" },
     { color: "#4CC5C7" },
@@ -76,6 +86,7 @@ export default async function JobPageContent({ searchParams }) {
 
   const colorMapBar = barData.map(item => item.color);
 
+  // Bar chart data
   const updatedBarData = salaryHistogramData.map((item, index) => ({
     name: `$${item.key}`,
     value: item.value,
@@ -86,6 +97,7 @@ export default async function JobPageContent({ searchParams }) {
     <>
       <section className="p-6 md:p-2 md:px-8">
         <div className="max-w-7xl md:mx-auto">
+          {/* Breadcrumbs */}
           <div className="mb-5">
             <Breadcrumbs items={[
               { label: "Home", href: "/" },
@@ -95,6 +107,8 @@ export default async function JobPageContent({ searchParams }) {
               },
             ]} />
           </div>
+
+          {/* Job Title and other information */}
           <div className="flex justify-between">
             <div className="text-2xl font-normal">
               <h2>{jobTitle} Jobs</h2>
@@ -108,24 +122,28 @@ export default async function JobPageContent({ searchParams }) {
           </div>
         </div>
       </section>
+
+      {/* Job List */}
       {jobDetailsData?.items?.length > 0 && (
         <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
           <div className="max-w-7xl md:mx-auto">
-            <div>{jobDetailsData?.items?.map((item, index) => (
-              <JobCard
-                key={index}
-                jobTitle={item.title || "N/a"}
-                img={image}
-                jobType={item.jobType || "N/a"}
-                salaryRange={item.estimatedSalary}
-                location={item.location || "N/a"}
-                jobSummary={item.jobSummary || "N/a"}
-                buttonLabel="Apply Now →"
-                buttonLink={item.jobUrl}
-                companyName={item.companyName || "N/a"}
-                postingDate={item.publishedAt}
-                rating={item.rating}
-              />))}
+            <div>
+              {/* Mapped job list */}
+              {jobDetailsData?.items?.map((item, index) => (
+                <JobCard
+                  key={index}
+                  jobTitle={item.title || "N/a"}
+                  img={image}
+                  jobType={item.jobType || "N/a"}
+                  salaryRange={item.estimatedSalary}
+                  location={item.location || "N/a"}
+                  jobSummary={item.jobSummary || "N/a"}
+                  buttonLabel="Apply Now →"
+                  buttonLink={item.jobUrl}
+                  companyName={item.companyName || "N/a"}
+                  postingDate={item.publishedAt}
+                  rating={item.rating}
+                />))}
             </div>
             {page < totalPages && (
               <div className="flex justify-center">
@@ -137,6 +155,8 @@ export default async function JobPageContent({ searchParams }) {
           </div>
         </section>
       )}
+
+      {/* If no jobs found */}
       {(!jobDetailsData?.items || jobDetailsData?.items?.length === 0) && (
         <section className="p-6 md:p-2 mt-2 mb-6 md:px-8">
           <div className="max-w-7xl md:mx-auto">
@@ -144,6 +164,8 @@ export default async function JobPageContent({ searchParams }) {
           </div>
         </section>
       )}
+
+      {/* Other job details */}
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="m-4 md:m-12 md:mt-12 max-w-7xl md:mx-auto">
           <h2 className="text-2xl font-normal mb-8">
@@ -169,6 +191,8 @@ export default async function JobPageContent({ searchParams }) {
           </div>
         </div>
       </section>
+
+      {/* Pie chart section */}
       <section className="p-4 md:p-8 space-y-5 ">
         <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto  p-4 md:p-10 MapWrapper ">
           <h2 className="text-2xl font-normal mb-8">
@@ -177,6 +201,8 @@ export default async function JobPageContent({ searchParams }) {
           <JobMarketAnalysis pieData={updatedPieData} barData={updatedBarData} />
         </div>
       </section>
+
+      {/* Locations nearby section */}
       {jobLocationsNearbyData && jobLocationsNearbyData.length > 0 && (
         <section className="p-4 md:p-8 space-y-5">
           <div className="m-4 md:m-12 md:mt-12  max-w-7xl md:mx-auto">
@@ -191,6 +217,8 @@ export default async function JobPageContent({ searchParams }) {
           </div>
         </section>
       )}
+
+      {/* FAQs section */}
       <section className="bg-gray-50 p-4 md:p-8 space-y-5">
         <div className="max-w-7xl md:mx-auto">
           <div>

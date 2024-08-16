@@ -1,4 +1,6 @@
-export default function Home() {
+// Talent Reports component
+
+export default function TalentReports() {
   return (
     <>
       <section className="p-4 md:p-8">

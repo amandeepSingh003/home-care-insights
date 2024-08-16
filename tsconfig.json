@@ -33,7 +33,6 @@
     "app/components/Button.jsx",
     "app/components/BreadCrumbs.jsx",
     "app/components/Card.jsx",
-    "app/components/clientProvider.jsx",
     "app/components/CompanyJobStats.jsx",
     "app/components/Faq.jsx",
     "app/components/JobCard.jsx",

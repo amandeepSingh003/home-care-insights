@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+// Job Search component
+
+import React, { useState, useCallback } from "react";
 import AutocompleteList from './AutocompleteList';
 
 const SearchForm = ({
@@ -10,6 +12,7 @@ const SearchForm = ({
 }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Debounce to get data correctly
   const debounce = (func, delay) => {
     let debounceTimer;
     return function (...args) {
@@ -19,6 +22,7 @@ const SearchForm = ({
     };
   };
 
+  // Toggle show suggestions
   const fetchSuggestions = (value) => {
     if (value && Array.isArray(searchResults)) {
       setShowSuggestions(true);
@@ -29,12 +33,14 @@ const SearchForm = ({
 
   const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 300), [searchResults]);
 
+  // Location change handler
   const handleLocationChange = (e) => {
     const value = e.target.value;
     handleChange({ name: 'jobLocation', value: value });
     debouncedFetchSuggestions(value);
   };
 
+  // Location select handler
   const handleLocationSelect = (location) => {
     const { region, city, country } = location
     handleChange({ name: 'jobLocation', value: `${region}, ${city}, ${country}` });

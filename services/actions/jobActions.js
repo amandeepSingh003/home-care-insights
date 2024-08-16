@@ -1,6 +1,7 @@
 import api from "../../services/api";
 import Constants from "../../services/constants";
 
+// Job list action
 const jobDetails = async ({
   jobTitle = "",
   city = "",
@@ -35,6 +36,7 @@ const jobDetails = async ({
   }
 };
 
+// Popular job searches action
 const getPopularJobSearches = async () => {
   try {
     const res = await api(
@@ -47,6 +49,7 @@ const getPopularJobSearches = async () => {
   }
 };
 
+// Job locations nearby action
 const jobLocationsNearby = async () => {
   try {
     // const res = await api(
@@ -97,6 +100,7 @@ const jobLocationsNearby = async () => {
   }
 };
 
+// Salary Histogram action
 const salaryHistogram = async () => {
   try {
     // const res = await api(
@@ -134,6 +138,7 @@ const salaryHistogram = async () => {
   }
 };
 
+// Percent Per jobs action
 const percentPerJobs = async () => {
   try {
     // const res = await api(
